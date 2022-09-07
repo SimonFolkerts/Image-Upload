@@ -1,51 +1,53 @@
 <script>
-  export default {
-    data() {
-      return {
-        data: {
-          name: "name",
-          email: "email@gmail.com",
-        }
-      }
+export default {
+  data() {
+    return {
+      image: null,
+      items: [],
+    };
+  },
+  methods: {
+    fileChangeHandler(event) {
+      this.image = event.target.files[0];
     },
-    methods: {
-      async getData() {
-        const response = await fetch ('http://127.0.0.1:3000/data');
-        const data = await response.json();
-        console.log(data);
-      },
-      async postData() {
-        const response = await fetch ('http://127.0.0.1:3000/data', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json'},
-          body: JSON.stringify(this.data),
-        });
-        const data = await response.json();
-        console.log(data);
-      }
-    }
-  }
+    async uploadFile() {
+      const formData = new FormData();
+      formData.append("attachment", this.image);
+
+      const response = await fetch("http://127.0.0.1:3000/images", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+      console.log(data);
+    },
+    async getFiles() {
+      const response = await fetch("http://localhost:3000/images");
+      const results = await response.json();
+      this.items = results;
+    },
+  },
+};
 </script>
 
 <template>
-  <div>
-    <h1>This is the home page</h1>
-  </div>
-  <form>
-    <div class="form-group">
-      <label for="name">Name</label>
-      <input v-model="data.name" id="name" type="text">
+  <main>
+    <h2>This is the home view</h2>
+    <div>
+      <input @input="fileChangeHandler" type="file" name="image" id="image" />
+      <br />
+      <br />
+      <button @click="uploadFile" type="button">Upload</button>
     </div>
-    <div class="form-group">
-      <label for="email">Email</label>
-      <input v-model="data.email" id="email" type="email">
+    <br />
+    <br />
+    <br />
+    <div>
+      <button @click="getFiles" type="button">Get</button>
     </div>
-  </form>
-  <div>
-    <button @click="getData" type="button">GET</button>
-    <button @click="getDataById" type="button">GET ID</button>
-    <button @click="postData" type="button">POST</button>
-    <button @click="updateData" type="button">PUT</button>
-    <button @click="deleteData" type="button">DELETE</button>
-  </div>
+    <div v-for="item of items">
+      {{ items }}
+      <img :src="`data:image/png;base64,${item.image.data}`" />
+    </div>
+  </main>
 </template>
