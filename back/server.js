@@ -1,5 +1,7 @@
 const port = 3000;
-const mongoDB = "PUT YOUR STRING HERE"; //!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!
+
+const dotenv = require("dotenv").config();
+const mongoDB = process.env.DB_STRING;
 
 const express = require("express");
 const mongoose = require("mongoose");
